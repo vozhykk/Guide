@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E3A33">
+<title>Краков вслух</title>
+<style>
+:root{
+  --patyna:#1E3A33;
+  --patyna-glub:#152A25;
+  --cegla:#B4462E;
+  --mosiadz:#D8A93A;
+  --papier:#F4EFE4;
+  --papier-cien:#E4DCCB;
+  --atrament:#241F19;
+  --przyciszony:#6B6154;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--patyna);
+  color:var(--papier);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-size:17px;line-height:1.5;
+  padding-bottom:env(safe-area-inset-bottom);
+  overscroll-behavior-y:none;
+}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px}
+
+/* ── шапка ── */
+header{padding:calc(env(safe-area-inset-top) + 18px) 0 14px}
+.brand{display:flex;align-items:baseline;gap:10px;width:100%}
+.brand h1{
+  margin:0;font-family:Georgia,"Times New Roman",serif;
+  font-size:26px;font-weight:400;letter-spacing:-.01em;
+}
+.brand span{font-size:13px;color:#9BB3A9}
+.gps{
+  margin-top:12px;display:flex;align-items:center;gap:9px;
+  font-size:13.5px;color:#9BB3A9;min-height:20px;
+}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mosiadz);flex:none}
+.dot.szuka{animation:puls 1.4s ease-in-out infinite}
+.dot.zle{background:var(--cegla)}
+@keyframes puls{0%,100%{opacity:.25}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.dot.szuka{animation:none;opacity:.7}}
+
+/* ── карточка «вы здесь» ── */
+.tu{
+  background:var(--papier);color:var(--atrament);
+  border-radius:var(--r);padding:20px 18px 18px;margin-top:6px;
+  box-shadow:0 10px 30px rgba(0,0,0,.28);
+}
+.tu .odleglosc{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--cegla);font-weight:600;letter-spacing:.02em;
+}
+.strzalka{
+  width:17px;height:17px;flex:none;fill:var(--cegla);
+  transition:transform .35s cubic-bezier(.2,.7,.3,1);
+}
+.tu h2{
+  margin:8px 0 2px;font-family:Georgia,serif;font-weight:400;
+  font-size:31px;line-height:1.08;letter-spacing:-.015em;
+}
+.tu .pod{margin:0;font-size:14px;color:var(--przyciszony)}
+.tu .hook{
+  margin:14px 0 0;font-family:Georgia,serif;font-size:17.5px;line-height:1.48;
+  border-left:3px solid var(--mosiadz);padding-left:13px;
+}
+.akcje{display:flex;gap:9px;margin-top:17px}
+.akcje button{
+  flex:1;padding:13px 10px;border-radius:10px;font-size:15px;font-weight:600;
+}
+.glowny{background:var(--patyna);color:var(--papier)}
+.drugi{background:var(--papier-cien);color:var(--atrament)}
+
+/* ── список ── */
+.tytul-sekcji{
+  margin:26px 0 10px;font-size:13px;color:#8FA9A0;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.tytul-sekcji button{font-size:13px;color:var(--mosiadz)}
+ul.lista{list-style:none;margin:0;padding:0}
+ul.lista li{border-top:1px solid rgba(244,239,228,.13)}
+ul.lista li:last-child{border-bottom:1px solid rgba(244,239,228,.13)}
+.poz{width:100%;display:flex;align-items:center;gap:14px;padding:14px 2px;text-align:left}
+.poz .m{
+  font-variant-numeric:tabular-nums;font-size:13px;color:var(--mosiadz);
+  min-width:62px;flex:none;
+}
+.poz .n{flex:1;min-width:0}
+.poz .n b{display:block;font-weight:500;font-size:16.5px}
+.poz .n small{display:block;color:#8FA9A0;font-size:13px;margin-top:1px}
+.poz.blisko .n b{color:var(--mosiadz)}
+
+/* ── чтение ── */
+.czytnik{
+  position:fixed;inset:0;background:var(--papier);color:var(--atrament);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:20;
+  transform:translateY(100%);transition:transform .32s cubic-bezier(.3,.8,.3,1);
+}
+.czytnik.on{transform:none}
+@media (prefers-reduced-motion:reduce){.czytnik{transition:none}}
+.pasek{
+  position:sticky;top:0;background:var(--papier);z-index:2;
+  padding:calc(env(safe-area-inset-top) + 12px) 18px 10px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:1px solid var(--papier-cien);
+}
+.pasek .zamknij{font-size:15px;color:var(--przyciszony);padding:4px 0}
+.pasek .mowa{
+  margin-left:auto;background:var(--patyna);color:var(--papier);
+  padding:9px 15px;border-radius:999px;font-size:14px;font-weight:600;
+}
+.pasek .mowa.gra{background:var(--cegla)}
+article{padding:22px 18px 70px;max-width:560px;margin:0 auto}
+article h2{
+  margin:0 0 4px;font-family:Georgia,serif;font-weight:400;
+  font-size:33px;line-height:1.06;letter-spacing:-.015em;
+}
+article .pod{margin:0;color:var(--przyciszony);font-size:14.5px}
+.warstwy{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0}
+.warstwy span{
+  font-size:12.5px;padding:4px 10px;border-radius:999px;
+  background:var(--papier-cien);color:var(--przyciszony);
+}
+article .hook{
+  font-family:Georgia,serif;font-size:19px;line-height:1.45;
+  margin:20px 0 4px;border-left:3px solid var(--mosiadz);padding-left:14px;
+}
+.rozdzial{margin-top:26px}
+.rozdzial h3{
+  margin:0 0 6px;font-family:Georgia,serif;font-weight:400;font-size:20px;
+  color:var(--cegla);line-height:1.2;
+}
+.rozdzial p{
+  margin:0;font-family:Georgia,serif;font-size:17.5px;line-height:1.62;
+  hyphens:auto;
+}
+.rozdzial.czyta p{background:rgba(216,169,58,.2);border-radius:4px}
+.stopka-czytnika{
+  margin-top:36px;padding-top:16px;border-top:1px solid var(--papier-cien);
+  font-size:13.5px;color:var(--przyciszony);
+}
+
+/* ── всплывашка «вы пришли» ── */
+.dotarl{
+  position:fixed;left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);
+  background:var(--cegla);color:#fff;border-radius:12px;padding:14px 16px;
+  display:flex;align-items:center;gap:12px;z-index:15;
+  box-shadow:0 12px 28px rgba(0,0,0,.35);
+  transform:translateY(160%);transition:transform .3s cubic-bezier(.2,.8,.3,1);
+}
+.dotarl.on{transform:none}
+.dotarl div{flex:1;min-width:0}
+.dotarl b{display:block;font-size:16px}
+.dotarl small{opacity:.85;font-size:13px}
+.dotarl button{background:#fff;color:var(--cegla);padding:9px 14px;border-radius:8px;font-weight:700;font-size:14px}
+
+footer{padding:24px 0 30px;font-size:12.5px;color:#7C948B;line-height:1.55}
+footer a{color:#9BB3A9}
+:focus-visible{outline:2px solid var(--mosiadz);outline-offset:3px;border-radius:4px}
+.chowaj{display:none}
+.suwak{margin-top:22px}
+.suwak label{display:flex;justify-content:space-between;font-size:14.5px;color:var(--atrament)}
+.suwak b{color:var(--przyciszony);font-weight:400;font-variant-numeric:tabular-nums}
+.suwak input{width:100%;margin-top:8px;accent-color:var(--cegla)}
+.proba{width:100%;margin-top:22px;padding:13px;border-radius:10px;
+  background:var(--patyna);color:var(--papier);font-size:15px;font-weight:600}
+.glos{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  margin-top:12px;padding:13px 14px;border-radius:10px;background:var(--papier-cien)}
+.glos.wybrany{background:var(--patyna);color:var(--papier)}
+.glos span{flex:1;min-width:0}
+.glos b{display:block;font-size:15.5px;font-weight:500}
+.glos small{display:block;font-size:12px;opacity:.65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>Краков вслух</h1>
+      <span id="licznik"></span>
+      <button id="btn-glos" style="margin-left:auto;color:var(--mosiadz);font-size:14px">Голос</button>
+    </div>
+    <div class="gps"><i class="dot szuka" id="kropka"></i><span id="status">Определяю, где вы стоите…</span></div>
+  </header>
+
+  <section class="tu chowaj" id="karta">
+    <div class="odleglosc">
+      <svg class="strzalka" id="strzalka" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 21 21l-9-5-9 5z"/></svg>
+      <span id="odl"></span>
+    </div>
+    <h2 id="k-tytul"></h2>
+    <p class="pod" id="k-pod"></p>
+    <p class="hook" id="k-hook"></p>
+    <div class="akcje">
+      <button class="glowny" id="k-czytaj">Читать</button>
+      <button class="drugi" id="k-sluchaj">Слушать</button>
+    </div>
+  </section>
+
+  <div class="tytul-sekcji">
+    <span id="naglowek-listy">Все истории</span>
+    <button id="przelacz-spacer">Режим прогулки: выкл.</button>
+  </div>
+  <ul class="lista" id="lista"></ul>
+
+  <footer>
+    Работает без интернета. Геолокация нужна только на вашем телефоне и никуда не отправляется.<br>
+    Легенды помечены в тексте как легенды — их не надо путать с историей.
+  </footer>
+</div>
+
+<div class="dotarl" id="dotarl" role="status">
+  <div><b id="d-tytul"></b><small id="d-pod"></small></div>
+  <button id="d-otworz">Открыть</button>
+</div>
+
+<div class="czytnik" id="glosy" role="dialog" aria-modal="true" aria-label="Голос рассказчика">
+  <div class="pasek"><button class="zamknij" id="glosy-zamknij">← Назад</button></div>
+  <article>
+    <h2>Голос рассказчика</h2>
+    <p class="pod">Нажмите на голос, чтобы услышать пробную фразу.</p>
+    <div class="rozdzial" id="info-nagrania" style="display:none">
+      <h3>Есть записанная озвучка</h3>
+      <p>Она включается сама. Настройки ниже действуют только там, где записи нет.
+      <label style="display:block;margin-top:10px"><input type="checkbox" id="syntez">
+      Читать синтезатором вместо записи</label></p>
+    </div>
+    <div id="lista-glosow"></div>
+    <div class="suwak"><label>Темп <b id="v-tempo"></b></label>
+      <input type="range" id="tempo" min="0.7" max="1.15" step="0.01"></div>
+    <div class="suwak"><label>Тембр — ниже значит глубже <b id="v-ton"></b></label>
+      <input type="range" id="ton" min="0.6" max="1.2" step="0.01"></div>
+    <button class="proba" id="proba">Проверить как звучит</button>
+    <div class="rozdzial">
+      <h3>Если голос всё равно женский</h3>
+      <p>Браузер берёт голоса из системы Android и обычно отдаёт только один русский —
+      женский от Google. Понизьте тембр до 0,65: получится ниже, но всё ещё синтетично.
+      Настоящий мужской голос даёт нативное приложение из архива: там можно поставить
+      бесплатный движок RHVoice с голосами Александр и Артемий.</p>
+    </div>
+  </article>
+</div>
+
+<div class="czytnik" id="czytnik" role="dialog" aria-modal="true" aria-label="История места">
+  <div class="pasek">
+    <button class="zamknij" id="zamknij">← Назад</button>
+    <button class="mowa" id="mowa">Слушать</button>
+  </div>
+  <article id="tresc"></article>
+</div>
+
+<script>
+const DANE = /*STORIES*/;
+const P = DANE.places;
+
+/* ── геометрия ── */
+const rad = d => d * Math.PI / 180;
+function dystans(a, b, c, d){
+  const R = 6371000, dl = rad(c - a), dg = rad(d - b);
+  const x = Math.sin(dl/2)**2 + Math.cos(rad(a))*Math.cos(rad(c))*Math.sin(dg/2)**2;
+  return Math.round(2 * R * Math.asin(Math.sqrt(x)));
+}
+function azymut(a, b, c, d){
+  const y = Math.sin(rad(d-b)) * Math.cos(rad(c));
+  const x = Math.cos(rad(a))*Math.sin(rad(c)) - Math.sin(rad(a))*Math.cos(rad(c))*Math.cos(rad(d-b));
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+}
+const metry = m => m < 1000 ? m + " м" : (m/1000).toFixed(1).replace(".", ",") + " км";
+
+/* ── состояние ── */
+let poz = null, kurs = null, spacer = false, otwarte = null;
+const odwiedzone = new Set();
+const $ = id => document.getElementById(id);
+
+/* ── список ── */
+function rysujListe(){
+  const s = [...P];
+  if (poz) s.forEach(p => p._d = dystans(poz.lat, poz.lon, p.lat, p.lon));
+  if (poz) s.sort((a, b) => a._d - b._d);
+  $("lista").innerHTML = "";
+  s.forEach(p => {
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.className = "poz" + (poz && p._d <= p.radius ? " blisko" : "");
+    b.innerHTML = `<span class="m">${poz ? metry(p._d) : ""}</span>
+      <span class="n"><b></b><small></small></span>`;
+    b.querySelector("b").textContent = p.title;
+    b.querySelector("small").textContent = p.subtitle;
+    b.onclick = () => otworz(p);
+    li.appendChild(b); $("lista").appendChild(li);
+  });
+  $("naglowek-listy").textContent = poz ? "По близости" : "Все истории";
+}
+
+/* ── карточка ближайшего ── */
+function odswiezKarte(){
+  if (!poz) return;
+  const b = P.map(p => ({p, d: dystans(poz.lat, poz.lon, p.lat, p.lon)}))
+             .sort((x, y) => x.d - y.d)[0];
+  const {p, d} = b;
+  $("karta").classList.remove("chowaj");
+  $("odl").textContent = d <= p.radius ? "Вы на месте" : metry(d) + " отсюда";
+  $("k-tytul").textContent = p.title;
+  $("k-pod").textContent = p.subtitle;
+  $("k-hook").textContent = p.hook;
+  $("k-czytaj").onclick = () => otworz(p);
+  $("k-sluchaj").onclick = () => { otworz(p); setTimeout(() => przelaczMowe(true), 350); };
+  const az = azymut(poz.lat, poz.lon, p.lat, p.lon);
+  $("strzalka").style.transform = `rotate(${kurs === null ? az : az - kurs}deg)`;
+  $("strzalka").style.opacity = d <= p.radius ? .25 : 1;
+
+  if (d <= p.radius && !odwiedzone.has(p.id)){
+    odwiedzone.add(p.id);
+    if (navigator.vibrate) navigator.vibrate([40, 60, 40]);
+    if (spacer && !otwarte){ otworz(p); przelaczMowe(true); }
+    else pokazDotarl(p);
+  }
+}
+function pokazDotarl(p){
+  $("d-tytul").textContent = p.title;
+  $("d-pod").textContent = "Вы дошли — здесь есть история";
+  $("d-otworz").onclick = () => { schowajDotarl(); otworz(p); };
+  $("dotarl").classList.add("on");
+  clearTimeout(pokazDotarl.t);
+  pokazDotarl.t = setTimeout(schowajDotarl, 12000);
+}
+const schowajDotarl = () => $("dotarl").classList.remove("on");
+
+/* ── чтение ── */
+function otworz(p){
+  otwarte = p;
+  const a = $("tresc");
+  a.innerHTML = "";
+  const h = document.createElement("h2"); h.textContent = p.title;
+  const s = document.createElement("p"); s.className = "pod"; s.textContent = p.subtitle;
+  const w = document.createElement("div"); w.className = "warstwy";
+  (p.layers || []).forEach(l => { const e = document.createElement("span"); e.textContent = l; w.appendChild(e); });
+  const k = document.createElement("p"); k.className = "hook"; k.textContent = p.hook;
+  a.append(h, s, w, k);
+  p.chapters.forEach((c, i) => {
+    const d = document.createElement("div"); d.className = "rozdzial"; d.dataset.i = i;
+    const t = document.createElement("h3"); t.textContent = c.h;
+    const q = document.createElement("p"); q.textContent = c.t;
+    d.append(t, q); a.appendChild(d);
+  });
+  const f = document.createElement("p"); f.className = "stopka-czytnika";
+  f.textContent = "Где сказано «легенда» или «предание» — это предание, а не установленный факт.";
+  a.appendChild(f);
+  a.scrollTop = 0;
+  $("czytnik").scrollTop = 0;
+  $("czytnik").classList.add("on");
+  stop();
+}
+$("zamknij").onclick = () => { $("czytnik").classList.remove("on"); otwarte = null; stop(); };
+
+/* ── подготовка текста к речи ── */
+const ORD_GEN=["","первого","второго","третьего","четвёртого","пятого","шестого","седьмого","восьмого","девятого","десятого","одиннадцатого","двенадцатого","тринадцатого","четырнадцатого","пятнадцатого","шестнадцатого","семнадцатого","восемнадцатого","девятнадцатого","двадцатого","двадцать первого"];
+const ORD_PRE=["","первом","втором","третьем","четвёртом","пятом","шестом","седьмом","восьмом","девятом","десятом","одиннадцатом","двенадцатом","тринадцатом","четырнадцатом","пятнадцатом","шестнадцатом","семнадцатом","восемнадцатом","девятнадцатом","двадцатом","двадцать первом"];
+const ORD_NOM=["","первый","второй","третий","четвёртый","пятый","шестой","седьмой","восьмой","девятый","десятый","одиннадцатый","двенадцатый","тринадцатый","четырнадцатый","пятнадцатый","шестнадцатый","семнадцатый","восемнадцатый","девятнадцатый","двадцатый","двадцать первый"];
+function rzym(s){
+  const v={I:1,V:5,X:10,L:50,C:100}; let n=0;
+  for(let i=0;i<s.length;i++){const a=v[s[i]],b=v[s[i+1]]||0; if(!a)return 0; n+=a<b?-a:a;}
+  return n;
+}
+function normuj(t){
+  t=t.replace(/\b([IVXLC]{1,6})\b(\s*[–—-]\s*([IVXLC]{1,6})\b)?(\s*(вв\.|в\.|век[а-яё]*))?/g,
+    (m,a,_1,b,_2,tail)=>{
+      const n=rzym(a); if(!n||n>21) return m;
+      tail=tail||"";
+      if(!tail) return m;                     // одиночная «I» — это не век
+      const f = /^век(е|ах)$/.test(tail) ? ORD_PRE
+              : (/^век$/.test(tail) ? ORD_NOM : ORD_GEN);
+      const slowo = tail==="в." ? "века" : tail==="вв." ? "веков" : tail;
+      const m2 = b ? rzym(b) : 0;
+      const cyfry = (m2>0&&m2<=21) ? f[n]+" и "+f[m2] : f[n];
+      return slowo ? cyfry+" "+slowo : cyfry;
+    });
+  return t.replace(/т\. н\./g,"так называемый").replace(/ок\. /g,"около ")
+          .replace(/г\./g,"года").replace(/[«»]/g,"")
+          .replace(/—/g,",").replace(/ – /g,", ").replace(/…/g,".")
+          .replace(/\s+/g," ").trim();
+}
+/* режем на фразы: паузы между ними и дают ощущение живой речи */
+function frazy(t){
+  const out=[];
+  normuj(t).split(/(?<=[.!?:])\s+/).forEach(z=>{
+    if(z.length<=150){ out.push(z); return; }
+    let buf="";
+    z.split(/(?<=,)\s+/).forEach(cz=>{
+      if(buf && buf.length+cz.length<150) buf+=" "+cz;
+      else { if(buf) out.push(buf); buf=cz; }
+    });
+    if(buf) out.push(buf);
+  });
+  return out.filter(Boolean);
+}
+
+/* ── голос ── */
+const synt = window.speechSynthesis;
+let gra=false, kolejka=[], idx=0, glosy=[], wybrany=null;
+let tempo=0.92, ton=0.92;
+try{
+  tempo=parseFloat(localStorage.getItem("tempo"))||0.92;
+  ton=parseFloat(localStorage.getItem("ton"))||0.92;
+  wybrany=localStorage.getItem("glos")||null;
+}catch(e){}
+function zapisz(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+function zbierzGlosy(){
+  if(!synt) return;
+  glosy = synt.getVoices().filter(v=>/^ru/i.test(v.lang));
+  if(!glosy.some(v=>v.name===wybrany)) wybrany = glosy[0] ? glosy[0].name : null;
+  rysujGlosy();
+}
+function glosObiekt(){ return glosy.find(v=>v.name===wybrany) || null; }
+
+function rysujGlosy(){
+  const box=$("lista-glosow"); if(!box) return;
+  box.innerHTML="";
+  if(!glosy.length){
+    box.innerHTML='<p class="pod" style="margin-top:16px;color:var(--cegla)">'+
+      'Русских голосов в системе не найдено. Настройки Android → Специальные возможности → Синтез речи.</p>';
+    return;
+  }
+  glosy.forEach((v,i)=>{
+    const b=document.createElement("button");
+    b.className="glos"+(v.name===wybrany?" wybrany":"");
+    b.innerHTML='<span><b></b><small></small></span>';
+    b.querySelector("b").textContent="Голос "+(i+1)+(v.localService?" · офлайн":" · нужен интернет");
+    b.querySelector("small").textContent=v.name;
+    b.onclick=()=>{ wybrany=v.name; zapisz("glos",v.name); rysujGlosy(); proba(); };
+    box.appendChild(b);
+  });
+}
+function proba(){
+  stop();
+  const u=new SpeechSynthesisUtterance("Вы стоите на Главном Рынке. Под этой плитой два с половиной метра городского мусора.");
+  u.lang="ru-RU"; u.rate=tempo; u.pitch=ton;
+  const g=glosObiekt(); if(g) u.voice=g;
+  synt.speak(u);
+}
+
+/* ── записанная озвучка ── */
+let NAGRANIA={}, audio=null, sciezka=0, wymusSyntez=false;
+try{ wymusSyntez = localStorage.getItem("syntez")==="1"; }catch(e){}
+fetch("audio/manifest.json").then(r=>r.ok?r.json():null).then(m=>{
+  if(m){ NAGRANIA=m; const e=$("info-nagrania"); if(e) e.style.display="block"; }
+}).catch(()=>{});
+
+function grajNagranie(p){
+  const ile=NAGRANIA[p.id]; if(!ile) return false;
+  stop(); sciezka=0; gra=true;
+  $("mowa").textContent="Пауза"; $("mowa").classList.add("gra");
+  dalejNagranie(p, ile);
+  return true;
+}
+function dalejNagranie(p, ile){
+  if(!gra || sciezka>=ile) return stop();
+  const nr=String(sciezka).padStart(3,"0");
+  audio=new Audio(`audio/${p.id}/${nr}.mp3`);
+  const n=sciezka-1;
+  document.querySelectorAll(".rozdzial").forEach(e=>
+    e.classList.toggle("czyta", +e.dataset.i===n));
+  if(n>=0){ const el=document.querySelector('.rozdzial[data-i="'+n+'"]');
+            if(el) el.scrollIntoView({behavior:"smooth",block:"center"}); }
+  audio.onended=()=>{ if(gra){ sciezka++; dalejNagranie(p, ile); } };
+  audio.onerror=()=>{ NAGRANIA={}; gra=false; przelaczMowe(true); };  // нет файла — дочитываем синтезом
+  audio.play().catch(()=>{ NAGRANIA={}; gra=false; przelaczMowe(true); });
+}
+
+function przelaczMowe(wlacz){
+  if(gra && wlacz!==true) return stop();
+  if(!otwarte) return;
+  if(!wymusSyntez && grajNagranie(otwarte)) return;
+  if(!synt) return;
+  kolejka=[];
+  frazy(otwarte.title+". "+otwarte.hook).forEach(f=>kolejka.push({r:0,t:f,p:260}));
+  otwarte.chapters.forEach((c,ci)=>{
+    frazy(c.h).forEach(f=>kolejka.push({r:ci+1,t:f,p:480}));
+    const body=frazy(c.t);
+    body.forEach((f,i)=>kolejka.push({r:ci+1,t:f,p:i===body.length-1?700:240}));
+  });
+  idx=0; gra=true;
+  $("mowa").textContent="Пауза"; $("mowa").classList.add("gra");
+  mow();
+}
+function mow(){
+  if(idx>=kolejka.length) return stop();
+  const s=kolejka[idx];
+  const u=new SpeechSynthesisUtterance(s.t);
+  u.lang="ru-RU"; u.rate=tempo; u.pitch=ton;
+  const g=glosObiekt(); if(g) u.voice=g;
+  const n=s.r-1;
+  document.querySelectorAll(".rozdzial").forEach(e=>
+    e.classList.toggle("czyta", +e.dataset.i===n));
+  if(n>=0 && (idx===0 || kolejka[idx-1].r!==s.r)){
+    const el=document.querySelector('.rozdzial[data-i="'+n+'"]');
+    if(el) el.scrollIntoView({behavior:"smooth",block:"center"});
+  }
+  u.onend=()=>{ if(gra){ idx++; setTimeout(mow, s.p); } };
+  u.onerror=()=>stop();
+  synt.speak(u);
+}
+function stop(){
+  gra=false;
+  if(audio){ audio.pause(); audio.onended=null; audio.onerror=null; audio=null; }
+  if(synt) synt.cancel();
+  $("mowa").textContent="Слушать"; $("mowa").classList.remove("gra");
+  document.querySelectorAll(".rozdzial").forEach(e=>e.classList.remove("czyta"));
+}
+$("mowa").onclick=()=>przelaczMowe();
+if(synt){ synt.onvoiceschanged=zbierzGlosy; zbierzGlosy(); }
+
+/* панель голоса */
+$("btn-glos").onclick=()=>{ zbierzGlosy(); $("glosy").classList.add("on"); };
+$("glosy-zamknij").onclick=()=>{ $("glosy").classList.remove("on"); stop(); };
+$("proba").onclick=proba;
+$("syntez").checked=wymusSyntez;
+$("syntez").onchange=e=>{ wymusSyntez=e.target.checked; zapisz("syntez", wymusSyntez?"1":"0"); };
+function suwak(id,val,set,pod){
+  const e=$(id); e.value=val; $(pod).textContent=val.toFixed(2).replace(".",",");
+  e.oninput=()=>{ const v=parseFloat(e.value); set(v); $(pod).textContent=v.toFixed(2).replace(".",","); };
+}
+suwak("tempo",tempo,v=>{tempo=v;zapisz("tempo",v);},"v-tempo");
+suwak("ton",ton,v=>{ton=v;zapisz("ton",v);},"v-ton");
+
+/* ── режим прогулки ── */
+$("przelacz-spacer").onclick = () => {
+  spacer = !spacer;
+  $("przelacz-spacer").textContent = "Режим прогулки: " + (spacer ? "вкл." : "выкл.");
+  if (spacer && synt){ const u = new SpeechSynthesisUtterance(" "); u.volume = 0; synt.speak(u); }
+};
+
+/* ── компас ── */
+function kompas(){
+  const h = e => {
+    let a = e.webkitCompassHeading != null ? e.webkitCompassHeading
+          : (e.absolute && e.alpha != null ? 360 - e.alpha : null);
+    if (a != null){ kurs = a; if (poz) odswiezKarte(); }
+  };
+  window.addEventListener("deviceorientationabsolute", h, true);
+  window.addEventListener("deviceorientation", h, true);
+}
+
+/* ── GPS ── */
+function start(){
+  if (!navigator.geolocation) return blad("Браузер не умеет определять место. Выберите точку из списка.");
+  navigator.geolocation.watchPosition(
+    p => {
+      poz = {lat: p.coords.latitude, lon: p.coords.longitude};
+      $("kropka").classList.remove("szuka", "zle");
+      $("status").textContent = "Точность ±" + Math.round(p.coords.accuracy) + " м";
+      odswiezKarte(); rysujListe();
+    },
+    e => blad(e.code === 1
+      ? "Доступ к геолокации закрыт. Разрешите его или выберите точку вручную."
+      : "Не вижу спутников. В узких улицах это бывает — выберите точку вручную."),
+    {enableHighAccuracy: true, maximumAge: 5000, timeout: 20000}
+  );
+}
+function blad(t){
+  $("kropka").classList.remove("szuka");
+  $("kropka").classList.add("zle");
+  $("status").textContent = t;
+}
+
+$("licznik").textContent = P.length + " историй";
+rysujListe(); start(); kompas();
+document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); });
+</script>
+</body>
+</html>
